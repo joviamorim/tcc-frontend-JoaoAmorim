@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+$primary-main: rgba(20,77,0,1);
+$primary-light: rgba(4,153,0,1);
+$primary-dark: rgba(9,36,0,1);
+
+$neutral-gray33: rgba(85,85,85,1);
+$neutral-gray15: rgba(38,38,38,1);
+$neutral-black: rgba(0,0,0,1);
+$neutral-white: rgba(255,255,255,1);
+
+$background-option1: rgba(177,182,175,1);
+
+$option2-primary-main: rgba(40,153,0,1);
+$option2-primary-light: rgba(66,255,0,1);
+$option2-primary-dark: rgba(27,102,0,1);
+
+$font--16: 2.6rem, 'Tahoma'; 
+
+html {
+    font-size: 62.5%; //10px
+  }
+  
+  body {
+    font-size: 1.6rem; //16px
+    width: 100%;
+    padding: 0%;
+    margin: 0%;
+    background-color: $background-option1;
+  }

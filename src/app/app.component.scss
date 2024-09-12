@@ -1,0 +1,39 @@
+@use '../styles';
+
+header {
+    width: 100%;
+    height: 10rem;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    background-color: styles.$neutral-gray33;
+}
+
+main {
+    width: auto;
+    display: flex;
+    justify-content: center;
+    margin-left: 16.5rem;
+    margin-right: 16.5rem;
+    font-family: 'Tahoma';
+    font-size: 2rem;
+}
+
+.btn--primary-main {
+    font-family: 'Tahoma';
+    font-size: 2rem;
+    color: styles.$option2-primary-dark;
+    width: 17rem;
+    height: 5rem;
+    margin-right: 26rem;
+    border-radius: 1.5rem;
+    border-style: solid;
+    border-color: styles.$option2-primary-dark;
+    transition-duration: 0.4s;
+    background-color: styles.$background-option1;
+
+    &:hover {
+        color: styles.$neutral-white;
+        background-color: styles.$option2-primary-dark;
+    }
+}
