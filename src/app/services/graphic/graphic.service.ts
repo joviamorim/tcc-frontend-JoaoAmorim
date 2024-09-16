@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { TrackFeatures } from '../models/trackFeatures.model';
+import { TrackFeatures } from '../../models/trackFeatures.model';
 
 @Injectable({
   providedIn: 'root'

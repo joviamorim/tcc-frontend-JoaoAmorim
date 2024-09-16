@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js/auto';
-import { GraphicService } from '../services/graphic.service';
+import { GraphicService } from '../services/graphic/graphic.service';
 import { TrackFeatures } from '../models/trackFeatures.model';
 import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -17,13 +18,12 @@ export class HomeComponent implements OnInit{
   private allTrackFeatures: TrackFeatures[] = [];
   public chartList: Chart<"bar", { teste: string;numero: number; }[], unknown>[] = [];
 
-  constructor(private graphicService: GraphicService) {
+  constructor(private graphicService: GraphicService, private authService: AuthService) {
     this.trackFeatures$ = this.graphicService.getTopTracksWithFeatures();
     this.trackFeatures$.subscribe(all => this.allTrackFeatures = all);
   }
 
   ngOnInit(){
-
     // var trackFeaturesNames = [
     //   "Energia", "Valência", "Intensidade", "Dançabilidade",
     //   "Instrumentalidade", "Acusticidade", "Fala"
