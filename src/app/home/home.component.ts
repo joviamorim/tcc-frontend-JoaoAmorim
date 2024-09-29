@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js/auto';
 import { GraphicService } from '../services/graphic/graphic.service';
 import { TrackFeatures } from '../models/trackFeatures.model';
+import { Track } from '../models/track.model';
 import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
+import { Artist } from '../models/artist.model';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +17,22 @@ import { AuthService } from '../services/auth/auth.service';
 export class HomeComponent implements OnInit{
 
   private trackFeatures$ = new Observable<TrackFeatures[]>;
+  private track$ = new Observable<Track[]>;
+  private artist$ = new Observable<Artist[]>;
+
   private allTrackFeatures: TrackFeatures[] = [];
-  public chartList: Chart<"bar", { teste: string;numero: number; }[], unknown>[] = [];
+  private allTracks: Track[] = [];
+  private allArtists: Artist[] = [];
 
   constructor(private graphicService: GraphicService, private authService: AuthService) {
-    this.trackFeatures$ = this.graphicService.getTopTracksWithFeatures();
+    this.trackFeatures$ = this.graphicService.getTopTracksByFeatures();
     this.trackFeatures$.subscribe(all => this.allTrackFeatures = all);
+
+    this.track$ = this.graphicService.getTopTracksByPopularity();
+    this.track$.subscribe(all => this.allTracks = all);
+
+    this.artist$ = this.graphicService.getTopArtistsByPopularity();
+    this.artist$.subscribe(all => this.allArtists = all);
   }
 
   ngOnInit(){
@@ -34,14 +46,13 @@ export class HomeComponent implements OnInit{
     this.allTrackFeatures.forEach(track => {
       trackFeaturesAvg.energy? trackFeaturesAvg.energy = (trackFeaturesAvg.energy + track.energy) / 2 : trackFeaturesAvg.energy = track.energy;
       trackFeaturesAvg.valence? trackFeaturesAvg.valence = (trackFeaturesAvg.valence + track.valence) / 2 : trackFeaturesAvg.valence = track.valence;
-      //trackFeaturesAvg.loudness? trackFeaturesAvg.loudness = (trackFeaturesAvg.loudness + track.loudness) / 2 : trackFeaturesAvg.loudness = track.loudness;
       trackFeaturesAvg.danceability? trackFeaturesAvg.danceability = (trackFeaturesAvg.danceability + track.danceability) / 2 : trackFeaturesAvg.danceability = track.danceability;
       trackFeaturesAvg.instrumentalness? trackFeaturesAvg.instrumentalness = (trackFeaturesAvg.instrumentalness + track.instrumentalness) / 2 : trackFeaturesAvg.instrumentalness = track.instrumentalness;
       trackFeaturesAvg.acousticness? trackFeaturesAvg.acousticness = (trackFeaturesAvg.acousticness + track.acousticness) / 2 : trackFeaturesAvg.acousticness = track.acousticness;
       trackFeaturesAvg.speechiness? trackFeaturesAvg.speechiness = (trackFeaturesAvg.speechiness + track.speechiness) / 2 : trackFeaturesAvg.speechiness = track.speechiness;
     });
 
-    var myChart = new Chart("myChart", {
+    var myChart = new Chart("trackFeaturesAvg", {
       type: 'bar',
       data: {
         //labels: trackFeaturesNames,
@@ -66,14 +77,19 @@ export class HomeComponent implements OnInit{
       }
     });
 
-    var chart3 = new Chart("myChart3", {
+    const trackMap = this.allTracks.reduce((acc, track) => {
+      acc[track.name] = track.popularity; //define name como chave e popularity como valor
+      return acc;
+    }, {} as { [key: string]: number});
+
+    var chart3 = new Chart("trackPopularity", {
       type: 'bar',
       data: {
-        //labels: trackFeaturesNames,
+        //labels: this.trackNames,
         datasets: [{
-          label: '# Media',
-          data: 
-            {n1: 2, n2:1},
+          label: '# Popularidade',
+          data:
+            trackMap,
           borderWidth: 1
         },
       ]
@@ -87,13 +103,18 @@ export class HomeComponent implements OnInit{
       }
     });
 
-    var chart2 = new Chart("myChart2", {
+    const artistMap = this.allArtists.reduce((acc, artist) => {
+      acc[artist.name] = artist.popularity; //define name como chave e popularity como valor
+      return acc;
+    }, {} as { [key: string]: number});
+
+    var chart2 = new Chart("artistPopularity", {
       type: 'bar',
       data: {
         //labels: trackFeaturesNames,
         datasets: [{
-          label: '# Media',
-          data: {n1: 21, n2:13},
+          label: '# Popularidade',
+          data: artistMap,
           borderWidth: 1
         },
       ]
