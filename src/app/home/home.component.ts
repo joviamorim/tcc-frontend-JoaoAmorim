@@ -14,8 +14,8 @@ import { Artist } from '../models/artist.model';
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit{
-
+export class HomeComponent implements OnInit {
+  
   private trackFeatures$ = new Observable<TrackFeatures[]>;
   private track$ = new Observable<Track[]>;
   private artist$ = new Observable<Artist[]>;
@@ -23,6 +23,11 @@ export class HomeComponent implements OnInit{
   private allTrackFeatures: TrackFeatures[] = [];
   private allTracks: Track[] = [];
   private allArtists: Artist[] = [];
+
+  protected chartList: string[] = [];
+  protected mainChart: string = "";
+  
+  protected charts: {name:string, data:any}[] = [];
 
   constructor(private graphicService: GraphicService, private authService: AuthService) {
     this.trackFeatures$ = this.graphicService.getTopTracksByFeatures();
@@ -35,13 +40,11 @@ export class HomeComponent implements OnInit{
     this.artist$.subscribe(all => this.allArtists = all);
   }
 
-  ngOnInit(){
-    // var trackFeaturesNames = [
-    //   "Energia", "Valência", "Intensidade", "Dançabilidade",
-    //   "Instrumentalidade", "Acusticidade", "Fala"
-    // ];
+  private data: any = {n1: 3, n2: 20};
 
-    var trackFeaturesAvg: Partial<TrackFeatures> = {};
+  // iniciando os gráficos
+  ngOnInit(){
+    const trackFeaturesAvg: Partial<TrackFeatures> = {};
 
     this.allTrackFeatures.forEach(track => {
       trackFeaturesAvg.energy? trackFeaturesAvg.energy = (trackFeaturesAvg.energy + track.energy) / 2 : trackFeaturesAvg.energy = track.energy;
@@ -52,89 +55,41 @@ export class HomeComponent implements OnInit{
       trackFeaturesAvg.speechiness? trackFeaturesAvg.speechiness = (trackFeaturesAvg.speechiness + track.speechiness) / 2 : trackFeaturesAvg.speechiness = track.speechiness;
     });
 
-    var myChart = new Chart("trackFeaturesAvg", {
-      type: 'bar',
-      data: {
-        //labels: trackFeaturesNames,
-        datasets: [{
-          label: '# Media',
-          data: trackFeaturesAvg,
-          borderWidth: 1
-        },
-        {
-          label: '# teste',
-          data: trackFeaturesAvg,
-          borderWidth: 1
-        },
-      ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    this.createChart("trackFeaturesAvg", trackFeaturesAvg);
+    this.chartList.push("trackFeaturesAvg");
 
     const trackMap = this.allTracks.reduce((acc, track) => {
       acc[track.name] = track.popularity; //define name como chave e popularity como valor
       return acc;
     }, {} as { [key: string]: number});
 
-    var chart3 = new Chart("trackPopularity", {
-      type: 'bar',
-      data: {
-        //labels: this.trackNames,
-        datasets: [{
-          label: '# Popularidade',
-          data:
-            trackMap,
-          borderWidth: 1
-        },
-      ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    this.createChart("trackPopularity", trackMap);
+    this.chartList.push("trackPopularity");
 
     const artistMap = this.allArtists.reduce((acc, artist) => {
       acc[artist.name] = artist.popularity; //define name como chave e popularity como valor
       return acc;
     }, {} as { [key: string]: number});
 
-    var chart2 = new Chart("artistPopularity", {
-      type: 'bar',
-      data: {
-        //labels: trackFeaturesNames,
-        datasets: [{
-          label: '# Popularidade',
-          data: artistMap,
-          borderWidth: 1
-        },
-      ]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    this.createChart("artistPopularity", artistMap);
+    this.chartList.push("artistPopularity");
 
-    var chart1 = new Chart("myChart1", {
+    // gráfico reserva
+    this.createChart("chartReserva", this.data);
+    this.chartList.push("chartReserva");
+  }
+
+  // inicializando os gráficos
+  createChart(chartName:string, chartData:any) {
+
+    this.charts.push({name:chartName, data:chartData});
+
+    const chart = new Chart(chartName, {
       type: 'bar',
       data: {
-        //labels: trackFeaturesNames,
         datasets: [{
           label: '# Media',
-          data: {n1: 3, n2:20},
+          data: chartData,
           borderWidth: 1
         },
       ]
@@ -147,10 +102,16 @@ export class HomeComponent implements OnInit{
         }
       }
     });
-  }
-  
-  getTopMusics() {
-
+    return chart;
   }
 
+  // atualizar os gráficos de acordo com a opção que o usuário escolher
+  // deve ser trocado o gráfico principal com o gráfico escolhido da lista
+  updateChart(chart:string){
+    const currentIndex = this.chartList.findIndex(currentChart => chart === currentChart);
+    const currentChart = this.chartList[currentIndex];
+
+    this.chartList[currentIndex] = this.chartList[0];
+    this.chartList[0] = currentChart;
+  }
 }

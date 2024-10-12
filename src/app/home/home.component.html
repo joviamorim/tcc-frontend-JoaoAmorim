@@ -1,25 +1,26 @@
 <main>
     <div id="filters">
-        <input type="button" value="Filtros" class="btn--primary-main">
+        <input type="button" value="Gráficos" class="btn--primary-main">
         <input type="button" value="Filtros" class="btn--primary-main">
         <input type="button" value="Filtros" class="btn--primary-main">
         <input type="button" value="Filtros" class="btn--primary-main">
     </div>
     <section class="chart-main">
-        <h2>Gráfico 1</h2>
+        <h2>{{ chartList[0] }}</h2>
         <div class="chart">
-            <canvas id="trackFeaturesAvg"></canvas>
+            <canvas [id]="chartList[0]"></canvas>
         </div>
     </section>
     <section id="chart-list">
-        <div class="chart">
-            <canvas id="myChart1"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="artistPopularity"></canvas>
-        </div>
-        <div class="chart">
-            <canvas id="trackPopularity"></canvas>
-        </div>
+        @for (chart of chartList; track chart) {
+            @if (chart !== chartList[0]) {
+                <div class="chart">
+                    <button (click)="updateChart(chart)">Visualizar</button>
+                    <canvas [id]="chart"></canvas>
+                </div>
+            }
+        } @empty {
+            <li>There are no items.</li>
+        }
     </section>
 </main>
